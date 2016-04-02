@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>SpecCanvas User Study</title>
+
+		<!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+
+	
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-10">
+					<div class="page-header">
+						<h1>Spectrogram Canvas User Study</h1>
+					</div>
+					<ul class="nav nav-pills">
+					  <li role="presentation" ><a href="pre-questionnaire.html">Pre-Questionnaire</a></li>
+					  <li role="presentation" class="active"><a href="#">Instructions</a></li>
+					  <li role="presentation" class="disabled"><a href="#">Practice</a></li>
+					  <li role="presentation" class="disabled"><a href="#">Experiment</a></li>
+					  <li role="presentation" class="disabled"><a href="#">Post-Questionnaire</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-10">
+					<h2>Instructions:</h2>
+					<h3>Backgound information on spectrograms</h3>
+					<p>A spectrogram is a visual representation of a sound that is often used by engineers and researchers to analyse animal sounds or timbres of instruments.</p>
+					<img src="img/spectrogram.jpg" width="90%">
+					<h4>Axes of a spectrogram</h4>
+					<p>A spectrogram represents a given sound in 3 dimensions. The horizontal axis represents time, the vertical axis represents frequency, and the third dimension represents the amplitude of a particular frequency at a particular time according to the intensity of colour of each point in the image.</p>
+					<p>This can be represented by a colour map, or by the opacity of the colour:</p>
+				</div>
+			</div>
+			<!-- insert pictures of spectrogram amplitude-->
+			<div class="row">
+				<div class="col-md-5 col-md-offset-1">
+					
+				</div>
+				<div class="col-md-5">
+					
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-10">
+					<h4>Timbre/Character of sound</h4>
+					<p>While frequency and amplitude is often used to describe a pure sound wave, a music’s character is often shaped by how these attributes change over time, or how these sine waves are played on top of each other.</p>
+					<p>These are usually dependent on the following features of a spectrogram:</p>
+					<ol>
+						<li>
+						<p><b>ADSR Envelopes.</b><br>
+						When a musical instrument is played, its amplitude is often not static. Instead, the loudness of the sound would build up and decay over time as a single note is played. This is referred to as an <i>envelope</i> and varies different from instrument to instrument, giving different instruments its specific character. An envelope can also be represented by graphically on an amplitude-time graph:</p>
+						</li>
+						<li>
+						<p><b>Harmonic Envelopes.</b><br>
+						Compared to a single sine tone, instruments tend to sound richer due to the presence of harmonics. On the spectrogram, these show up as extra frequency bands that are multiples above the base frequency:</p>
+						</li>
+					</ol>
+				</div>
+			</div>
+
+
+			<nav>
+				<ul class="pagination">
+					<li>
+						<a href="#" aria-label="Previous">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+					<li><a href="#">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">3</a></li>
+					<li><a href="#">4</a></li>
+					<li><a href="#">5</a></li>
+					<li>
+						<a href="#" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
+			<a href="practice.html" class="btn btn-primary active">Next</a>
+		</div>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="js/vendor/jquery-2.2.0.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/vendor/bootstrap.min.js"></script>
+	</body>
+</html>

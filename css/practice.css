@@ -1,0 +1,16 @@
+.sound-wave {
+	z-index: 0;
+	position: relative;
+}
+
+.sound-wave > button {
+	z-index: 1;
+	position: absolute;
+	bottom: 14px;
+	right: 0;
+}
+
+#svg-canvas {
+	width: 100%;
+}
+
