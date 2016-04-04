@@ -11,20 +11,17 @@ var currTrail = 0;
 beginSectionOne();
 
 function beginSectionOne() {
-	// $('.section-two').hide();
+	$('.section-two').hide();
 	$('.section-one').show();
 
-	//--- randomnise 14 cases
-	trails = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-	shuffle(trails);
-	currTrail = 0;
-
+	resetTrailOrder();
 	setupSectionOneTest();
 }
 
 function setupSectionOneTest() {
 	//--- load the sound file
 	loadSoundFile(trailNoToName(trails[currTrail]) + ".wav");
+	updateExptTrails();
 
 	//--- pick 3 other random options
 	var optionPicked = [];
@@ -34,7 +31,6 @@ function setupSectionOneTest() {
 	}
 	optionPicked[trails[currTrail]] = 1;
 	selectedOptions.push(trails[currTrail]);
-
 	var currCandidate = 0;
 	while (selectedOptions.length < 4) {
 		currCandidate = Math.floor(Math.random()*14)%14;
@@ -46,14 +42,7 @@ function setupSectionOneTest() {
 	shuffle(selectedOptions);
 	loadOptions();
 	
-}
-
-function trailNoToName(trailNo) {
-	var freq = Math.floor(trailNo/6);
-	var envelope = (trailNo - freq*6) % 2;
-	var waveType = Math.floor(trailNo/2) % 3;
-
-	return freqTrails[freq] + "_" + waveTypeTrials[waveType] + "_" + envelopeTrails[envelope];
+	$('#next-experiment').addClass("disabled");
 }
 
 function loadOptions() {
@@ -62,39 +51,39 @@ function loadOptions() {
 		$('#option-'+i+' img').attr('height', "400px");
 		$('#option-'+i+' img').attr('src', "img/" + trailNoToName(selectedOptions[i]) + ".png");
 	}
-}
 
-$('.option').click(function(evt) {
-	evt.stopPropagation();
-
-	showAnswer();
-
-	if (selectedOptions[($(this)[0].id).substr(7)] == trails[currTrail]) {
-		// TODO: increment
-		console.log("correct");
-	}
-
-	$('#next-experiment').removeClass("disabled");
-	
-	$('#next-experiment').click(function(evt) {
+	$('.option').click(function(evt) {
 		evt.stopPropagation();
-		$(this).off('click');
-		
-		currTrail++;
-		$('#next-experiment').addClass("disabled");
+		$('.option').off('click');
 
-		if (currTrail < 14) {
-			setupSectionOneTest();
-		} else {
-			currTrail = 0;
-			currSection++;
-			beginSectionTwo();
+		if (selectedOptions[($(this)[0].id).substr(7)] == trails[currTrail]) {
+			// TODO: increment
+			console.log("correct");
 		}
 
-		// window.scrollTo(0, 0);
-	});
+		showAnswer();
 
-});
+		$('#next-experiment').removeClass("disabled");		
+		$('#next-experiment').click(function(evt) {
+			evt.stopPropagation();
+			$(this).off('click');
+
+			currTrail++;
+			$('#next-experiment').addClass("disabled");
+
+			if (currTrail < 14) {
+				setupSectionOneTest();
+			} else {
+				currTrail = 0;
+				currSection++;
+				beginSectionTwo();
+			}
+
+			// window.scrollTo(0, 0);
+		});
+
+	});
+}
 
 function showAnswer() {
 	for (var i = 0; i < 4; i++) {
@@ -109,6 +98,63 @@ function showAnswer() {
 function beginSectionTwo() {
 	$('.section-one').hide();
 	$('.section-two').show();
+
+	resetTrailOrder();
+	setupSectionTwoTest();
+}
+
+function setupSectionTwoTest() {
+	//--- TODO: reset canvas
+	//--- load the sound file
+	loadSoundFile(trailNoToName(trails[currTrail]) + ".wav");
+	updateExptTrails();
+	$('#next-experiment').removeClass("disabled");
+
+	if (currSet == 3 && currTrail == 13) {
+		$('#next-experiment').text("Done");
+		$('#next-experiment').attr('href', "post-questionnaire.html");
+	}
+
+	$('#next-experiment').click(function(evt) {
+		evt.stopPropagation();
+		$(this).off('click');
+		
+		currTrail++;
+
+		if (currTrail < 14) {
+			setupSectionTwoTest();
+		} else {
+			currTrail = 0;
+			currSection = 1;
+			currSet++;
+
+			beginSectionOne();
+		}
+
+		// window.scrollTo(0, 0);
+	});
+}
+
+function updateExptTrails() {
+	$('#set-indicator').text(currSet);
+	$('#section-indicator').text(currSection);
+	$('#trail-indicator').text(currTrail+1);
+}
+
+function resetTrailOrder() {
+	//--- randomnise order of 14 cases
+	trails = [];
+	trails = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+	shuffle(trails);
+	currTrail = 0;
+}
+
+function trailNoToName(trailNo) {
+	var freq = Math.floor(trailNo/6);
+	var envelope = (trailNo - freq*6) % 2;
+	var waveType = Math.floor(trailNo/2) % 3;
+
+	return freqTrails[freq] + "_" + waveTypeTrials[waveType] + "_" + envelopeTrails[envelope];
 }
 
 function loadSoundFile(soundFileName) {
@@ -128,7 +174,6 @@ function loadSoundFile(soundFileName) {
 
 	request.send();
 }
-
 
 function soundStoppedFunction() {
 	console.log("sound stoped");

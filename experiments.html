@@ -64,29 +64,8 @@
 					Set: <span id="set-indicator"></span>/3<br>
 					Section: <span id="section-indicator"></span>/2<br>
 					Trail: <span id="trail-indicator"></span>/14
-				</div>
-			</div>
 
-			<div class="row">
-				<div class="col-md-10 section-one">	
-					<div>
-						<div class="row">
-							<div id="option-0" class="col-md-12 option">A.<br><img src=""></div>
-						</div>
-						<div class="row">
-							<div id="option-1" class="col-md-12 option">B.<br><img src=""></div>
-						</div>
-						<div class="row">
-							<div id="option-2" class="col-md-12 option">C.<br><img src=""></div>
-						</div>
-						<div class="row">
-							<div id="option-3" class="col-md-12 option">D.<br><img src=""></div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-md-2 section-one">
-					<br>
+					<br><br>
 					<!-- Button trigger modal -->
 					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectCanvasGuide">
 						Spectrogram Canvas guide
@@ -109,6 +88,25 @@
 									<p><b>Duplicate tool:</b> Duplicate all selected harmonics.</p>
 								</div>
 							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-10 section-one">	
+					<div>
+						<div class="row">
+							<div id="option-0" class="col-md-12 option">A.<br><img src=""></div>
+						</div>
+						<div class="row">
+							<div id="option-1" class="col-md-12 option">B.<br><img src=""></div>
+						</div>
+						<div class="row">
+							<div id="option-2" class="col-md-12 option">C.<br><img src=""></div>
+						</div>
+						<div class="row">
+							<div id="option-3" class="col-md-12 option">D.<br><img src=""></div>
 						</div>
 					</div>
 				</div>
@@ -208,37 +206,11 @@
 					</ul>
 				</div>		
 
-				<div class="col-md-2 section-two">
-					<br>
-					<!-- Button trigger modal -->
-					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectCanvasGuide">
-						Spectrogram Canvas guide
-					</button>
-
-					<!-- Modal -->
-					<div class="modal fade" id="spectCanvasGuide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-									<h4 class="modal-title" id="myModalLabel">How to use Spectrogram Canvas</h4>
-								</div>
-								<div class="modal-body">
-									<h4>Tools in Spectrogram Canvas</h4>
-									<p><b>Harmonic-pencil tool:</b> Used to draw more than one harmonics at a time. Right-click on harmonic after drawing to bring up the harmonic inspector. Hold down the <i>Shift</i> key to draw a straight horizontal line if needed.</p>
-									<p><b>Harmonic inspector:</b> Used to adjust the amplitudes of individual partials, add or delete new harmonics at integer multiples of the base frequency (f0). The overall envelope of the harmonics can be adjusted by changing the gradient colour of the painted harmonics.</p>
-									<p><b>Select tool:</b> Used to select or deselect harmonics on the spectrogram. Selected harmonics will be bounded by a box to indicate that it has been selected.</p>
-									<p><b>Delete tool:</b> Delete all selected harmonics.</p>
-									<p><b>Duplicate tool:</b> Duplicate all selected harmonics.</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 
 			<div class="row">
 				<div class="col-md-10">	
+					<br>
 					<a id="next-experiment" class="btn btn-primary active disabled">Next</a>
 				</div>
 			</div>
@@ -247,6 +219,7 @@
 		<script src="js/vendor/jquery-2.2.2.min.js"></script>
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/SvgCreator.js"></script>
+		<script type="text/javascript" src="js/StrokeGradient.js"></script>
 		<script type="text/javascript" src="js/ContextMenu.js"></script>
 		<script type="text/javascript" src="js/SvgPathObject.js"></script>
 		<script type="text/javascript" src="js/SvgHarmonics.js"></script>

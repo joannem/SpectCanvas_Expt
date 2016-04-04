@@ -49,14 +49,14 @@ $('#recon-sound-button').click(function(evt) {
 			nowBuffering[i] = reconPcm[i];
 		}
 
-		gReconSound = new Sound (gAudioCtx, reconSoundBuffer, onSoundStop);
+		gReconSound = new Sound (gAudioCtx, reconSoundBuffer, onReconSoundStop);
 		
 		//--- draw waveform of new sound
 		var monoSoundData = gReconSound.getMonoSoundData();
 		gSoundVisualiser.drawReconWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
 
 		//--- create wave file to be downloaded
-		createWaveFile();
+		// createWaveFile();
 	});
 });
 
@@ -75,3 +75,9 @@ $('#reconstructed-sound-play-button').click(function() {
 		$(this).html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 	}
 });
+
+function onReconSoundStop() {
+	console.log("sound stoped");
+	gReconSound.setIsPlaying(false);
+	$('#reconstructed-sound-play-button').html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
+}
