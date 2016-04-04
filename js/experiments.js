@@ -8,9 +8,21 @@ var currSet = 1;
 var currSection = 1;
 var currTrail = 0;
 
+var noOfCorrectAnsSectionOne = [];
+var noOfCorrectAns = 0;
+var likelinessRatingSectionTwo = [];
+var likelinessRatingSectionTwoOneSet = [];
+
+var timeTakenSectionOne = [];
+var timeTakenSectionTwo = [];
+var date = new Date();
+var startTime = 0;
+
 beginSectionOne();
 
 function beginSectionOne() {
+	date = new Date();
+	startTime = date.getTime();
 	$('.section-two').hide();
 	$('.section-one').show();
 
@@ -57,7 +69,7 @@ function loadOptions() {
 		$('.option').off('click');
 
 		if (selectedOptions[($(this)[0].id).substr(7)] == trails[currTrail]) {
-			// TODO: increment
+			noOfCorrectAns++;
 			console.log("correct");
 		}
 
@@ -74,8 +86,12 @@ function loadOptions() {
 			if (currTrail < 14) {
 				setupSectionOneTest();
 			} else {
+				noOfCorrectAnsSectionOne[currSet-1] = noOfCorrectAns;
+				noOfCorrectAns = 0;
+				date = new Date();
+				timeTakenSectionOne[currSet-1] = date.getTime() - startTime;
 				currTrail = 0;
-				currSection++;
+				currSection = 2;
 				beginSectionTwo();
 			}
 
@@ -96,42 +112,68 @@ function showAnswer() {
 }
 
 function beginSectionTwo() {
+	date = new Date();
+	startTime = date.getTime();
 	$('.section-one').hide();
 	$('.section-two').show();
 
 	resetTrailOrder();
 	setupSectionTwoTest();
+	likelinessRatingSectionTwoOneSet = [];
 }
 
 function setupSectionTwoTest() {
-	//--- TODO: reset canvas
+	$('#next-experiment').addClass("disabled");
+
+	gReconSound = null;
+	$('#reconstructed-sound-wave')[0].getContext("2d").fillStyle = '#000000';
+	$('#reconstructed-sound-wave')[0].getContext("2d").fillRect(0, 0, 945, 140);
+	while($('#spectrogram-canvas')[0].firstChild) {
+		$("#spectrogram-canvas")[0].removeChild($("#spectrogram-canvas")[0].firstChild);
+	}
+	
 	//--- load the sound file
 	loadSoundFile(trailNoToName(trails[currTrail]) + ".wav");
 	updateExptTrails();
-	$('#next-experiment').removeClass("disabled");
+	$('#next-experiment').addClass("disabled");
 
 	if (currSet == 3 && currTrail == 13) {
 		$('#next-experiment').text("Done");
 		$('#next-experiment').attr('href', "post-questionnaire.html");
+
 	}
 
-	$('#next-experiment').click(function(evt) {
+	var rank = 0;
+	
+	$('.radio-recon-rank').click(function(evt) {
 		evt.stopPropagation();
-		$(this).off('click');
-		
-		currTrail++;
+		$('.radio-recon-rank').off('click');
+		console.log($(this)[0].children);
+		rank = $(this)[0].children[0].value;
 
-		if (currTrail < 14) {
-			setupSectionTwoTest();
-		} else {
-			currTrail = 0;
-			currSection = 1;
-			currSet++;
+		$('#next-experiment').removeClass("disabled");
+		$('#next-experiment').click(function(evt) {
+			evt.stopPropagation();
+			$(this).off('click');
 
-			beginSectionOne();
-		}
+			likelinessRatingSectionTwoOneSet[currTrail] = rank;
+			
+			currTrail++;
 
-		// window.scrollTo(0, 0);
+			if (currTrail < 14) {
+				setupSectionTwoTest();
+			} else {
+				date = new Date();
+				timeTakenSectionTwo[currSet-1] = date.getTime() - startTime;
+				currTrail = 0;
+				currSection = 1;
+				currSet++;
+				likelinessRatingSectionTwo.push(likelinessRatingSectionTwoOneSet);
+
+				beginSectionOne();
+			}
+
+		});
 	});
 }
 
