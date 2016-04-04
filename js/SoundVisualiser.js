@@ -24,9 +24,14 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 
 	//----- variables -----//
 	
-	var hiddenCanvasCtx = hiddenCanvasObj[0].getContext("2d");
+	if (hiddenCanvasObj != null) {
+		var hiddenCanvasCtx = hiddenCanvasObj[0].getContext("2d");
+		setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
+	}
 
-	var spsiWaveformCanvaCtx = spsiWaveformCanvasObj[0].getContext("2d");
+	if (spsiWaveformCanvaCtx != null) {
+		var spsiWaveformCanvaCtx = spsiWaveformCanvasObj[0].getContext("2d");
+	}
 	var waveformCanvasCtx = waveformCanvasObj[0].getContext("2d");
 
 	//--- for dragging and zooming canvas
@@ -37,7 +42,6 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 	//--- values for calculating FFT:
 	var noOfFrames = 1050;	// default value (unknown until length of PCM data is known)
 
-	setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
 	setupBlankCanvas(width, waveformHeight, waveformCanvasObj, waveformCanvasCtx);
 
 

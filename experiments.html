@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>SpecCanvas User Study</title>
+
+		<!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/experiments.css" rel="stylesheet">
+		<link href="css/SvgContextMenu.css" rel="stylesheet">
+	
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="page-header">
+						<h1>Spectrogram Canvas User Study</h1>
+					</div>
+
+					<ul class="nav nav-pills">
+						<li role="presentation"><a href="pre-questionnaire.html">Pre-Questionnaire</a></li>
+						<li role="presentation"><a href="instructions.html">Instructions</a></li>
+						<li role="presentation"><a href="#">Practice</a></li>
+						<li role="presentation" class="active"><a href="#">Experiment</a></li>
+						<li role="presentation" class="disabled"><a href="#">Post-Questionnaire</a></li>
+					</ul>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-10">		
+					<h2>Experiment</h2>
+					<h3>Instructions for <b>Section 1</b></h3>
+					<p>You will be given a sound signal and 4 spectrograms. <b>Select the spectrogram which you think you would most likely get from the given signal. You are allowed to replay the original sound as many times as you like before deciding on your answer.</b></p>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-10">	
+					<div id="sound-space-container">
+						<div class="sound-wave">
+							Original signal (mimic this):<br>
+							<canvas id="original-sound-wave"></canvas>
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
+							</button>
+						</div>
+					</div>
+
+					<div>
+						<div class="row">
+							<div id="option-a" class="col-md-6">A.<br><img src=""></div><div id="option-b" class="col-md-6">B.<br><img src=""></div>
+						</div>
+						<div class="row">
+							<div id="option-c" class="col-md-6">C.<br><img src=""></div><div id="option-d" class="col-md-6">D.<br><img src=""></div>
+						</div>
+					</div>
+
+					<a id="next-experiment" class="btn btn-primary active">Next</a>
+				</div>
+
+				<div class="col-md-2">
+					<br>
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectCanvasGuide">
+						Spectrogram Canvas guide
+					</button>
+
+					<!-- Modal -->
+					<div class="modal fade" id="spectCanvasGuide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">How to use Spectrogram Canvas</h4>
+								</div>
+								<div class="modal-body">
+									<h4>Tools in Spectrogram Canvas</h4>
+									<p><b>Harmonic-pencil tool:</b> Used to draw more than one harmonics at a time. Right-click on harmonic after drawing to bring up the harmonic inspector. Hold down the <i>Shift</i> key to draw a straight horizontal line if needed.</p>
+									<p><b>Harmonic inspector:</b> Used to adjust the amplitudes of individual partials, add or delete new harmonics at integer multiples of the base frequency (f0). The overall envelope of the harmonics can be adjusted by changing the gradient colour of the painted harmonics.</p>
+									<p><b>Select tool:</b> Used to select or deselect harmonics on the spectrogram. Selected harmonics will be bounded by a box to indicate that it has been selected.</p>
+									<p><b>Delete tool:</b> Delete all selected harmonics.</p>
+									<p><b>Duplicate tool:</b> Duplicate all selected harmonics.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="js/vendor/jquery-2.2.0.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/vendor/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/SoundVisualiser.js"></script>
+		<script type="text/javascript" src="js/experiments.js"></script>
+	</body>
+</html>

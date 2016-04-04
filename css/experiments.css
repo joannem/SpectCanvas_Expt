@@ -1,0 +1,11 @@
+.sound-wave {
+	z-index: 0;
+	position: relative;
+}
+
+.sound-wave > button {
+	z-index: 1;
+	position: absolute;
+	bottom: 4px;
+	right: 0;
+}
