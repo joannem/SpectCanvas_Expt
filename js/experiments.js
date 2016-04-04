@@ -1,19 +1,9 @@
-var gAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-var gSoundVisualiser = new SoundVisualiser($('#original-sound-wave'), null, null, 513, 140, 945);
-
-var gSound = null;
-
-$('#original-sound-wave').css({
-	"height": 140,
-	"width": $('#sound-space-container').width()
-});
-var originalSoundWaveCanvasCtx = $('#original-sound-wave')[0].getContext("2d");
-originalSoundWaveCanvasCtx.fillRect(0, 0, $('#sound-space-container').width(), 140);
-
 var freqTrails = [200, 250, 300];
 var waveTypeTrials = ["SinW", "ConstH", "DecH"];
 var envelopeTrails = ["ConstE", "IncDecE"];
 
+var trails = [];
+var selectedOptions = [];
 var currSet = 1;
 var currSection = 1;
 var currTrail = 0;
@@ -21,16 +11,41 @@ var currTrail = 0;
 beginSectionOne();
 
 function beginSectionOne() {
-	// randomnise 14 cases
-	var trails = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+	// $('.section-two').hide();
+	$('.section-one').show();
+
+	//--- randomnise 14 cases
+	trails = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 	shuffle(trails);
+	currTrail = 0;
 
-	var trailName = "";
-	for (var i = 0; i < trails.length; i++) {
-		trailName = trailNoToName(trails[i]);
+	setupSectionOneTest();
+}
+
+function setupSectionOneTest() {
+	//--- load the sound file
+	loadSoundFile(trailNoToName(trails[currTrail]) + ".wav");
+
+	//--- pick 3 other random options
+	var optionPicked = [];
+	selectedOptions = [];
+	for (var i = 0; i < 14; i++) {
+		optionPicked.push(0);
 	}
-	loadSoundFile(trailName + ".wav");
+	optionPicked[trails[currTrail]] = 1;
+	selectedOptions.push(trails[currTrail]);
 
+	var currCandidate = 0;
+	while (selectedOptions.length < 4) {
+		currCandidate = Math.floor(Math.random()*14)%14;
+		if (optionPicked[currCandidate] == 0) {
+			optionPicked[currCandidate] = 1;
+			selectedOptions.push(currCandidate);
+		}
+	}
+	shuffle(selectedOptions);
+	loadOptions();
+	
 }
 
 function trailNoToName(trailNo) {
@@ -41,23 +56,102 @@ function trailNoToName(trailNo) {
 	return freqTrails[freq] + "_" + waveTypeTrials[waveType] + "_" + envelopeTrails[envelope];
 }
 
-function loadSoundFile(soundFileName) {
-	console.log(soundFileName);
-	var request = new XMLHttpRequest(); 
-    
-    request.open("GET","TestTones/" + soundFileName,true); 
-    request.responseType = "arraybuffer"; 
-
-    request.onload = function() { 
-    	console.log("loaded");
-    };
-
-    request.send();
+function loadOptions() {
+	for (var i = 0; i < 4; i++) {
+		$('#option-'+i+' img').css('border', "none");
+		$('#option-'+i+' img').attr('height', "400px");
+		$('#option-'+i+' img').attr('src', "img/" + trailNoToName(selectedOptions[i]) + ".png");
+	}
 }
+
+$('.option').click(function(evt) {
+	evt.stopPropagation();
+
+	showAnswer();
+
+	if (selectedOptions[($(this)[0].id).substr(7)] == trails[currTrail]) {
+		// TODO: increment
+		console.log("correct");
+	}
+
+	$('#next-experiment').removeClass("disabled");
+	
+	$('#next-experiment').click(function(evt) {
+		evt.stopPropagation();
+		$(this).off('click');
+		
+		currTrail++;
+		$('#next-experiment').addClass("disabled");
+
+		if (currTrail < 14) {
+			setupSectionOneTest();
+		} else {
+			currTrail = 0;
+			currSection++;
+			beginSectionTwo();
+		}
+
+		// window.scrollTo(0, 0);
+	});
+
+});
+
+function showAnswer() {
+	for (var i = 0; i < 4; i++) {
+		if (selectedOptions[i] == trails[currTrail]) {
+			$('#option-'+i+' img').css('border', "5px solid #0FF000");
+		} else {
+			$('#option-'+i+' img').css('border', "5px solid red");
+		}
+	}
+}
+
+function beginSectionTwo() {
+	$('.section-one').hide();
+	$('.section-two').show();
+}
+
+function loadSoundFile(soundFileName) {
+	// console.log(soundFileName);
+	var request = new XMLHttpRequest(); 
+	
+	request.open("GET", "TestTones/" + soundFileName, true); 
+	request.responseType = "arraybuffer"; 
+
+	request.onload = function() { 
+		gAudioCtx.decodeAudioData(request.response, function(buffer) {
+			gSound = new Sound (gAudioCtx, buffer, soundStoppedFunction);
+			gMonoSoundData = gSound.getMonoSoundData();
+			gSoundVisualiser.drawWaveform(gMonoSoundData.monoPcmData, gMonoSoundData.pcmDataLen, gMonoSoundData.maxAmp);
+		});
+	};
+
+	request.send();
+}
+
 
 function soundStoppedFunction() {
 	console.log("sound stoped");
+	gSound.setIsPlaying(false);
+	$('#sample-sound-button').html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 }
+
+$('#sample-sound-button').click(function() {
+	event.stopPropagation();
+
+	if (gSound == null) {
+		console.log ("No sound data found.");
+	} else if (!gSound.isPlaying()) {
+		gSound.play(0);
+		gSound.setIsPlaying(true);
+		$(this).html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop');
+	} else {
+		gSound.stopPlaying();
+		gSound.setIsPlaying(false);	
+		$(this).html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
+	}
+});
+
 
 // http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 // Fisher-Yates (aka Knuth) Shuffle

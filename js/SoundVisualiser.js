@@ -24,15 +24,17 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 
 	//----- variables -----//
 	
-	if (hiddenCanvasObj != null) {
-		var hiddenCanvasCtx = hiddenCanvasObj[0].getContext("2d");
-		setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
+	if (spsiWaveformCanvasObj != null) {
+		var spsiWaveformCanvasCtx = spsiWaveformCanvasObj[0].getContext("2d");
+		if (hiddenCanvasObj != null) {
+			var hiddenCanvasCtx = hiddenCanvasObj[0].getContext("2d");
+			setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvasCtx);
+		}
 	}
 
-	if (spsiWaveformCanvaCtx != null) {
-		var spsiWaveformCanvaCtx = spsiWaveformCanvasObj[0].getContext("2d");
+	if (waveformCanvasObj != null) {
+		var waveformCanvasCtx = waveformCanvasObj[0].getContext("2d");
 	}
-	var waveformCanvasCtx = waveformCanvasObj[0].getContext("2d");
 
 	//--- for dragging and zooming canvas
 	var dx = 0; var dy = 0;
@@ -49,8 +51,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 
 	function setupBlankCanvas(width, height, canvasObj, canvasCtx) {
 		canvasObj.attr('width', width);
-		canvasObj.attr('height', height);	
-
+		canvasObj.attr('height', height);
 		canvasCtx.fillRect(0, 0, width, height);
 	}
 
@@ -109,20 +110,20 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 	 * @param {int} maxAmp 			Maximum amplitude of all values in monoPcmData
 	 */
 	this.drawReconWaveform = function(monoPcmData, pcmDataLen, maxAmp) {
-		spsiWaveformCanvaCtx.clearRect(0, 0, width, waveformHeight);
-		spsiWaveformCanvaCtx.fillStyle = '#000000';
-		spsiWaveformCanvaCtx.fillRect(0, 0, width, waveformHeight);
+		spsiWaveformCanvasCtx.clearRect(0, 0, width, waveformHeight);
+		spsiWaveformCanvasCtx.fillStyle = '#000000';
+		spsiWaveformCanvasCtx.fillRect(0, 0, width, waveformHeight);
 
 		//--- calculate waveform dimensions from audio data
 		var jump = Math.floor(pcmDataLen / width) > 1 ? Math.floor(pcmDataLen / width) : 1;
 		
 		//--- draw scaled waveform
 		console.log("Begin drawing SPSI waveform...");
-		spsiWaveformCanvaCtx.fillStyle = '#000FF0';
+		spsiWaveformCanvasCtx.fillStyle = '#000FF0';
 		var x = 0; var waveHeight = 0;
 		for(var i = 0; i < pcmDataLen; i += jump) {
 			waveHeight = monoPcmData[i] / maxAmp * waveformHeight;
-			spsiWaveformCanvaCtx.fillRect(x, (waveformHeight / 2) - waveHeight, 1, (waveHeight * 2));
+			spsiWaveformCanvasCtx.fillRect(x, (waveformHeight / 2) - waveHeight, 1, (waveHeight * 2));
 
 			x++;
 		}

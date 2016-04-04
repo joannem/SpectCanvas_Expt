@@ -9,3 +9,17 @@
 	bottom: 4px;
 	right: 0;
 }
+
+#svg-canvas {
+	z-index: 0;
+	position: relative;
+	width: 100%;
+}
+
+#hidden-spectrogram-canvas {
+	display: none;
+}
+
+.section-two {
+	/*display: none;*/
+}
