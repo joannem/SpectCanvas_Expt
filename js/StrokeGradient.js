@@ -7,11 +7,12 @@
  */
 
 // TODO: change white to black
-function StrokeGradient(pathId, opacity) {
+function StrokeGradient(harmonicId) {
 	"use strict";
 
 	var that = (this === window) ? {} : this;
-	var id = "gradient-fill-" + pathId;
+	var id = "gradient-fill-" + harmonicId;
+	var opacity = 1.0; 	// default
 
 	var gradientDefObj;
 	var linearGradientObj;

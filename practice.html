@@ -10,6 +10,7 @@
 		<!-- Bootstrap -->
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<link href="css/practice.css" rel="stylesheet">
+		<link href="css/SvgContextMenu.css" rel="stylesheet">
 	
 	</head>
 	<body>
@@ -56,23 +57,24 @@
 						</div>
 						Spectrogram Canvas: <br>
 						<svg id="svg-canvas" version="1.1" width="5000" height="500">
-								<rect width="100%" height="100%" fill="black"></rect>
+							<rect width="100%" height="100%" fill="black"></rect>
+							<svg id="svg-freq-scale">
+								<g id="freq-ticks"></g>
+							</svg>
+							<svg id="svg-time-scale">
+								<g id="time-ticks"></g>
+							</svg>
+							<svg id="spectrogram-canvas" version="1.1" width="5000" height="500"></svg>
 						</svg>
 
-						<div class="btn-group dropup">
-							<button type="button" class="btn btn-primary">Tools</button>
-							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<span class="caret"></span>
-								<span class="sr-only">Toggle Dropdown</span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Harmonic Pencil Tool</a></li>
-								<li><a><span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Select Tool</a></li>
-								<li><a><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Duplicate Tool</a></li>
-								<li><a><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Tool</a></li>
-							</ul>
-						</div>
-						<button type="button" class="btn btn-default">Reconstruct sound</button>
+						<button type="button" id="harmonic-pencil-tool-button" class="btn btn-default active tool-button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Harmonic Pencil Tool</button>
+						<button type="button" id="select-tool-button" class="btn btn-default tool-button"><span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Select Tool</button>
+						<button type="button" id="duplicate-button" class="btn btn-default"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Duplicate</button>
+						<button type="button" id="delete-button" class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+
+						<button type="button" class="btn btn-primary">Reconstruct sound</button>
+
+						<span id="tool-used">Tool: Harmonic Pencil</span>
 
 						<div class="sound-wave">
 							Reconstructed signal:<br>
@@ -81,6 +83,70 @@
 								<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
 							</button>
 						</div>
+					</div>
+
+					<div class="context-menu">
+						<ul>
+							<li>
+								Envelope: <br>
+								<div id="fill-slider">
+									<svg id="svg-fill" version="1.1" baseProfile="full" width="100%" height="100%">
+										<g>
+											<defs>
+												<pattern id="Background-pattern" x="0" y="0" width="10" height="10"
+														 patternUnits="userSpaceOnUse">
+													<rect x="0" y="0" width="5" height="5" fill="white"></rect>
+													<rect x="5" y="0" width="5" height="5" fill="grey"></rect>
+													<rect x="0" y="5" width="5" height="5" fill="grey"></rect>
+													<rect x="5" y="5" width="5" height="5" fill="white"></rect>
+												</pattern>
+
+												<linearGradient id="Gradient-fill">
+													<stop id="Gradient-fill-redStart" offset="0%" stop-color="red" stop-opacity="1"></stop>
+													<stop id="Gradient-fill-white" offset="25%" stop-color="white" stop-opacity="1"></stop>
+													<stop id="Gradient-fill-yellow" offset="50%" stop-color="yellow" stop-opacity="1"></stop>
+													<stop id="Gradient-fill-redEnd" offset="100%" stop-color="red" stop-opacity="1"></stop>
+												</linearGradient>
+											</defs>
+
+											<rect id="rect-fill"
+												  x="0" y="0" width="100%" height="100%"
+												  fill="url(#Gradient-fill)"
+												  stroke="#595959"
+												  stroke-width=1px;
+											></rect>
+
+											<!-- Sliders -->
+											<rect id="slider-redStart" x="0" y="0" width="10px" height="100%" stroke="black" fill="red" stroke-width="2" transform="translate(0)"></rect>
+											<rect id="slider-white" x="0" y="0" width="10px" height="100%" stroke="black" fill="white" stroke-width="2" transform="translate(0)"></rect>
+											<rect id="slider-yellow" x="0" y="0" width="10px" height="100%" stroke="black" fill="yellow" stroke-width="2" transform="translate(0)"></rect>
+											<rect id="slider-redEnd" x="0" y="0" width="10px" height="100%" stroke="black" fill="red" stroke-width="2" transform="translate(0)"></rect>
+										</g>
+									</svg>
+								</div>
+							</li>
+							Harmonic Levels:
+							<li id="harmonic-levels-container">
+								<svg id="harmonic-levels-svg" width="100%" height="100%">
+									<rect x="0" y="0" width="100%" height="100%" fill="#F2F2F2"></rect>
+									<g id="harmonic-levels"></g>
+									<g id="harmonic-dividers"></g>
+								</svg>
+							</li>
+
+							<!-- no of harmonics -->
+							<li><table><tbody><tr>
+								Number of Harmonics:
+								<td class="no-of-harmonics-btns"><button type="button" class="btn btn-default" id="minus-harmonics"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></td>
+								<td class="no-of-harmonics-btns"><span id="no-of-harmonics">3</td>
+								<td class="no-of-harmonics-btns"><button type="button" class="btn btn-default" id="add-harmonics"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></td>
+							</tr></tbody></table></li>
+							
+							<!-- f0 -->
+							<li>f0: <span id="context-menu-f0">100</span> hz</li>
+
+						</ul>
+
 					</div>
 
 					<nav>
@@ -104,7 +170,6 @@
 					</nav>
 
 					<a href="experiments.html" class="btn btn-primary active">Begin experiment</a>
-
 				</div>
 
 				<div class="col-md-2">
@@ -141,16 +206,16 @@
 		<script src="js/vendor/jquery-2.2.0.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="js/vendor/bootstrap.min.js"></script>
-		<script type="text/javascript">
-			$('#original-sound-wave, #reconstructed-sound-wave').css({
-				"height": 140,
-				"width": $('#sound-space-container').width()
-			});
-			var originalSoundWaveCanvasCtx = $('#original-sound-wave')[0].getContext("2d");
-			var reconstructedSoundWaveCanvasCtx = $('#reconstructed-sound-wave')[0].getContext("2d");
-			originalSoundWaveCanvasCtx.fillRect(0, 0, $('#sound-space-container').width(), 140);
-			reconstructedSoundWaveCanvasCtx.fillRect(0, 0, $('#sound-space-container').width(), $('#reconstructed-sound-wave').height());
-
-		</script>
+		<script type="text/javascript" src="js/SvgCreator.js"></script>
+		<script type="text/javascript" src="js/StrokeGradient.js"></script>
+		<script type="text/javascript" src="js/ContextMenu.js"></script>
+		<script type="text/javascript" src="js/SvgPathObject.js"></script>
+		<script type="text/javascript" src="js/SvgHarmonics.js"></script>
+		<script type="text/javascript" src="js/SvgCanvas.js"></script>
+		<script type="text/javascript" src="js/fft.js"></script>
+		<script type="text/javascript" src="js/WaveSpect.js"></script>
+		<script type="text/javascript" src="js/SoundVisualiser.js"></script>
+		<script type="text/javascript" src="js/Sound.js"></script>
+		<script type="text/javascript" src="js/practice.js"></script>
 	</body>
 </html>

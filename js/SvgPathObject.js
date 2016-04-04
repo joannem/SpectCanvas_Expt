@@ -5,7 +5,7 @@
  * Created by joanne on 17/12/15.
  */
 
-function SvgPathObject(harmonicId, pathStr) {
+function SvgPathObject(harmonicId, pathStr, strokeGradient) {
 	"use strict";
 	var that = (this === window) ? {} : this;
 
@@ -14,8 +14,6 @@ function SvgPathObject(harmonicId, pathStr) {
 	//--- properties of stroke
 	var strokeOpacity = 1.0;
 	var strokeWidth = 1;
-	var isGradient = true;
-	var strokeGradient = new StrokeGradient(harmonicId, strokeOpacity);
 
 	//--- initialising objects
 	createSvgPathObject(strokeWidth);
@@ -26,25 +24,6 @@ function SvgPathObject(harmonicId, pathStr) {
 		pathSvgObj = gSvgCreator.createSvgPath(pathStr, "url(#" + strokeGradient.getGradientId() + ")", strokeWidth);
 	}
 
-	function updateStrokeOpacity (newStrokeOpacity) {
-		strokeOpacity = newStrokeOpacity;
-		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
-		strokeGradient.setOpacity(strokeOpacity);
-	}
-
-	function updateStrokeFillType(newIsGradient) {
-		isGradient = newIsGradient;
-		if (isGradient) {
-			pathSvgObj.setAttribute('stroke', "url(#" + strokeGradient.getGradientId() + ")");
-		} else {
-			pathSvgObj.setAttribute('stroke', "url(#svg-pattern)");
-		}
-	}
-
-	function updateStrokeFillGradient(color, newOffset) {
-		strokeGradient.setOffset(color, newOffset);
-	}
-
 	//----- privileged methods -----//
 
 	/**
@@ -53,7 +32,7 @@ function SvgPathObject(harmonicId, pathStr) {
 	 * @returns grouped SVG object containing the SVG path and SVG guide box
 	 */
 	this.getPathSvgObj = function() {
-	  return pathSvgObj;
+		return pathSvgObj;
 	};
 
 	this.drawPath = function(x, y) {
@@ -61,26 +40,15 @@ function SvgPathObject(harmonicId, pathStr) {
 		pathSvgObj.setAttribute('d', pathStr);
 	};
 
-	// this.offsetPosition = function(newTransformMatrix) {
-	// 	transformMatrix = newTransformMatrix;
-	// 	groupedSvgObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
-	// };
-
-	this.updateStrokeProperties = function(property, value) {
-		switch(property) {
-			case "opacity":
-				updateStrokeOpacity(value);
-				break;
-			case "strokeFillType":
-				updateStrokeFillType(value);
-				break;
-			case "strokeFillGradient":
-				updateStrokeFillGradient(value.color, value.newOffset);
-				break;
-			default:
-				console.log("Error: unable to determine stroke property");
-		}
+	this.updatePath = function(newPath) {
+		pathSvgObj.setAttribute('d', newPath);
+		pathStr = newPath;
 	};
+
+	this.updateStrokeOpacity = function (newStrokeOpacity) {
+		strokeOpacity = newStrokeOpacity;
+		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
+	}
 
 	this.isSelected = function() {
 		return selected;
@@ -90,17 +58,8 @@ function SvgPathObject(harmonicId, pathStr) {
 		return pathStr;
 	};
 
-	this.getStrokeProperties = function() {
-	  return {
-		  strokeWidth: strokeWidth,
-		  strokeOpacity: strokeOpacity,
-		  isGradient: isGradient,
-		  strokeGradient: strokeGradient.getGradientProperties(),
-	  };
-	};
-
-	this.getStrokeGradient = function() {
-		return strokeGradient;
+	this.getStrokeOpacity = function() {
+		return strokeOpacity;
 	};
 
 	return that;

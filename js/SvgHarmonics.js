@@ -6,24 +6,32 @@
  * Created by joanne on 04/02/16
  */
 
-// TODO: find a better way to handle minX, minY, maxX and maxY
-function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
+function SvgHarmonic (id, startX, startY) {
 	"use strict";
 	var that = (this === window) ? {} : this;
 
 	var selected = false;
 
+	var strokeWidth = 1;
 	var noOfHarmonics = 3;		// default
+	var strokeGradient = new StrokeGradient(id);
+
 	var svgPathObjs = [];
 
+	var minXPos = 0;
+	var minYPos = 0;
+	var maxXPos = 0;
+	var maxYPos = 0;
 	var harmonicGuideBoxSvgObj;
 	var groupedSvgHarmonicObj;
 
-	var fundamentalFreq = ($("#svg-canvas").height() - minY) / gSvgCanvas.getPxPerHz();
+	var fundamentalFreq = ($("#svg-canvas").height() - startY) / gSvgCanvas.getPxPerHz();
 	fundamentalFreq = fundamentalFreq.toFixed(3);
 
+	var fundamentalPath = [];
+	fundamentalPath.push([startX, startY]);
+
 	//--- for dragging
-	var transformMatrix = [1, 0, 0, 1, 0, 0];
 	var currX = 0;
 	var currY = 0;
 
@@ -31,7 +39,6 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 	createIndividualHarmonics();
 	createGuideBox();
 	appendObjectsIntoGroup();
-	groupedSvgHarmonicObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
 
 	//--- to select and move SVG harmonic object
 	groupedSvgHarmonicObj.onmousedown = function(evt) {
@@ -72,53 +79,64 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 		evt.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			gContextMenu.showContextMenus(evt.pageY, evt.pageX, true, that);
+			gContextMenu.showContextMenu(evt.pageY, evt.pageX, that);
 		}
 
 		$(this).off('contextmenu');
 	});
 	
 	function createIndividualHarmonics() {
+		var flippedHeight = 500 - startY;
 		for (var i = 0; i < noOfHarmonics; i++) {
-			svgPathObjs[i] = new SvgPathObject(pathId + i, ("M " + minX + "," + minY));
+			flippedHeight = (500 - startY) * (i+1);
+			svgPathObjs[i] = new SvgPathObject(id, "M " + startX + "," + (500-flippedHeight ), strokeGradient);
 		}
 	}
 
-	function createGuideBox() {
-		harmonicGuideBoxSvgObj = gSvgCreator.createTransparentSvgRect(minX-1, minY-1, (maxX - minX) + 2, (maxY - minY) + 2, "#00FFFF", 1);
+	function createGuideBox() {svgPathObjs
+		harmonicGuideBoxSvgObj = gSvgCreator.createTransparentSvgRect(startX-1, startY-1, 2, 2, "#00FFFF", 1);
 		harmonicGuideBoxSvgObj.setAttribute('stroke-opacity', 0);
 	}
 
 	function appendObjectsIntoGroup() {
 		groupedSvgHarmonicObj = gSvgCreator.createSvgGroup();
-		groupedSvgHarmonicObj.appendChild(svgPathObjs[0].getGroupedSvgObj());
-		groupedSvgHarmonicObj.appendChild(svgPathObjs[1].getGroupedSvgObj());
-		groupedSvgHarmonicObj.appendChild(svgPathObjs[2].getGroupedSvgObj());
+		groupedSvgHarmonicObj.appendChild(strokeGradient.getGradientDefObj());
+		groupedSvgHarmonicObj.appendChild(svgPathObjs[0].getPathSvgObj());
+		groupedSvgHarmonicObj.appendChild(svgPathObjs[1].getPathSvgObj());
+		groupedSvgHarmonicObj.appendChild(svgPathObjs[2].getPathSvgObj());
 		groupedSvgHarmonicObj.appendChild(harmonicGuideBoxSvgObj);
 	}
 
 	//--- Called after initialisation
 
 	function moveGroup(evt) {
-		if (transformMatrix[5] + (evt.clientY - currY) + minY < $("#svg-canvas").height()) {
-			transformMatrix[4] += evt.clientX - currX;
-			transformMatrix[5] += evt.clientY - currY;
+		var dx = evt.clientX - currX;
+		var dy = evt.clientY - currY;
 
-			groupedSvgHarmonicObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
-			
-			for (var i = 0; i < noOfHarmonics; i++) {
-				// svgPathObjs[i].offsetPosition([1, 0, 0, 1, 0, -1 * ($("#svg-canvas").height() - (minY + transformMatrix[5])) * i]);		
+		var newPaths = [];
+		var yVal = 0;
+
+		for (var i = 0; i < noOfHarmonics; i++) {
+			newPaths[i] = "M ";
+
+			for (var j = 0; j < fundamentalPath.length; j++) {
+				fundamentalPath[j][0] += dx;
+				fundamentalPath[j][1] += dy;
+				yVal = 500 - (500 - fundamentalPath[j][1]) * (i+1);
+				newPaths[i] += (fundamentalPath[j][0] + "," + yVal + " ");
 			}
-
-			that.updateGuideBox();
-
-			currX = evt.clientX;
-			currY = evt.clientY;
+			
+			svgPathObjs[i].updatePath(newPaths[i]);
 		}
+
+		that.updateGuideBox();
+		
+		currX = evt.clientX;
+		currY = evt.clientY;
 	}
 	
 	function recalculateFundamentalFreq() {
-		fundamentalFreq = ($("#svg-canvas").height() - minY - transformMatrix[5]) / gSvgCanvas.getPxPerHz();
+		fundamentalFreq = ($("#svg-canvas").height() - startY - fundamentalPath[0][1]) / gSvgCanvas.getPxPerHz();
 		fundamentalFreq = fundamentalFreq.toFixed(3);
 	}
 
@@ -144,41 +162,39 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 	};
 
 	this.drawHarmonics = function(x, y) {
+		var baseHeight = 500 - y;
 		svgPathObjs[0].drawPath(x, y);
-		svgPathObjs[1].drawPath(x, y);
-		svgPathObjs[2].drawPath(x, y);
+		svgPathObjs[1].drawPath(x, 500 - (baseHeight*2));
+		svgPathObjs[2].drawPath(x, 500 - (baseHeight*3));
+
+		maxXPos = fundamentalPath[maxXPos][0] > x ? maxXPos : fundamentalPath.length;
+		maxYPos = fundamentalPath[maxYPos][1] > y ? maxYPos : fundamentalPath.length;
+		minXPos = fundamentalPath[minXPos][0] < x ? minXPos : fundamentalPath.length;
+		minYPos = fundamentalPath[minYPos][1] < y ? minYPos : fundamentalPath.length;
+
+		fundamentalPath.push([x, y]);
 	};
 
-	/**
-	 * Takes minimum and maximum coordinates of the first and last SVG 
-	 * path drawn, minX, minY, maxX and maxY, and adjusts the size of 
-	 * the SVG guide box accordingly.
-	 *
-	 * Call this everytime the path value is changed.
-	 * TODO: make this a private, automatic function
-	 */
 	this.updateGuideBox = function() {
 		var thickness = strokeWidth >> 1;
-		var coor = svgPathObjs[0].getGuideboxCoordinates();
 
-		for (var i = 0; i < svgPathObjs.length; i++) {
-			svgPathObjs[i].updateGuideBox();
-		}
-		
-		harmonicGuideBoxSvgObj.setAttribute('x', coor.minX - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('y', coor.minY - (noOfHarmonics-1)*($("#svg-canvas").height() - minY - transformMatrix[5]) - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('width', (coor.maxX - coor.minX) + (thickness << 1));
-		harmonicGuideBoxSvgObj.setAttribute('height', (coor.maxY - coor.minY + (noOfHarmonics-1)*($("#svg-canvas").height() - minY - transformMatrix[5])) + (thickness << 1));
+		harmonicGuideBoxSvgObj.setAttribute('x', fundamentalPath[minXPos][0] - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('y', 500 - (500 - fundamentalPath[minYPos][1])*noOfHarmonics - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('width', (fundamentalPath[maxXPos][0] - fundamentalPath[minXPos][0]) + (thickness << 1));
+		harmonicGuideBoxSvgObj.setAttribute('height', (fundamentalPath[maxYPos][1] - fundamentalPath[minYPos][1] + (noOfHarmonics-1)*($("#svg-canvas").height() - fundamentalPath[minYPos][1])) + (thickness << 1));
 	};
 
 	this.updateId = function(newId) {
 		id = newId;
 	};
 
+	this.updateStrokeFillGradient = function(color, newOffset) {
+		strokeGradient.setOffset(color, newOffset);
+	};
+
 	this.select = function() {
 		selected = true;
 		harmonicGuideBoxSvgObj.setAttribute('stroke-opacity', 1);
-		gSelectedSvgHarmonicId = id;
 	};
 
 	this.deselect = function() {
@@ -190,6 +206,10 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 		return selected;
 	};
 
+	this.getStrokeGradient = function() {
+		return strokeGradient.getGradientProperties();
+	};
+
 	this.getSvgPathObjs = function() {
 		return svgPathObjs;
 	};
@@ -199,12 +219,18 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 	};
 
 	this.addHarmonic = function() {
-		svgPathObjs[noOfHarmonics] = new SvgPathObject(gNoOfSvgPathObjs, minX, minY + 20, maxX, maxY + 20, (svgPathObjs[0].getPathStr()), strokeWidth);
+		var newPath = "M ";
+		var yVal = 0;
+		for (var i = 0; i < fundamentalPath.length; i++) {
+			yVal = 500 - (500 - fundamentalPath[i][1]) * (noOfHarmonics + 1);
+			newPath += (fundamentalPath[i][0] + "," + yVal + " ");
+		}
+
+		svgPathObjs[noOfHarmonics] = new SvgPathObject(id, newPath, strokeGradient);
 		groupedSvgHarmonicObj.insertBefore(svgPathObjs[noOfHarmonics].getPathSvgObj(), svgPathObjs[noOfHarmonics-1].getPathSvgObj().nextSibling);
-		// svgPathObjs[noOfHarmonics].offsetPosition([1, 0, 0, 1, 0, -1 * ($("#svg-canvas").height() - minY - transformMatrix[5]) * noOfHarmonics]);
 		
 		noOfHarmonics++;
-		gNoOfSvgPathObjs++;
+		$('#no-of-harmonics').text(noOfHarmonics);
 		that.updateGuideBox();
 	};
 	
@@ -213,6 +239,7 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY) {
 		svgPathObjs.splice(-1, 1);
 
 		noOfHarmonics--;
+		$('#no-of-harmonics').text(noOfHarmonics);
 		that.updateGuideBox();
 	};
 
