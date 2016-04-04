@@ -18,13 +18,12 @@
  * @param {int} spectHeight 				Maximum frequency resolution in pixels.
  * @param {int} width 						Maximum time resolution in pixels.
  */
-function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCanvasObj, hiddenCanvasObj, spectHeight, waveformHeight, width) {
+function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasObj, spectHeight, waveformHeight, width) {
 	"use strict";
 	var that = (this === window) ? {} : this;
 
 	//----- variables -----//
 	
-	var spectrogramCanvasCtx = spectrogramCanvasObj[0].getContext("2d");
 	var hiddenCanvasCtx = hiddenCanvasObj[0].getContext("2d");
 
 	var spsiWaveformCanvaCtx = spsiWaveformCanvasObj[0].getContext("2d");
@@ -38,7 +37,6 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 	//--- values for calculating FFT:
 	var noOfFrames = 1050;	// default value (unknown until length of PCM data is known)
 
-	setupBlankCanvas(width, spectHeight, spectrogramCanvasObj, spectrogramCanvasCtx);
 	setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
 	setupBlankCanvas(width, waveformHeight, waveformCanvasObj, waveformCanvasCtx);
 
@@ -128,108 +126,11 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		console.log("SPSI Waveform: done.");
 	};
 
-	/**
-	 * (Re)draws the spectrogram of the sound onto the spectrogram canvas.
-	 * 
-	 * @param {Array} monoPcmData	PCM of sound in mono form
-	 * @param {int} pcmDataLen		Length of monoPcmData
-	 */
-	this.drawSpectrogram = function(monoPcmData, pcmDataLen) {
-		console.log("Begin drawing spectrogram...");
-		spectrogramCanvasCtx.clearRect(0, 0, width, spectHeight);
-		
-		var soundSpectValuess = gWaveSpect.waveToSpect(monoPcmData, pcmDataLen);
-		var soundFFT = soundSpectValuess.spectrogram;
-		var maxSpecAmp = soundSpectValuess.maxSpecAmp;
-
-		var overlap = gWaveSpect.getOverlap();
-		var windowSize = gWaveSpect.getWindowSize();
-		var maxFreq = gWaveSpect.getMaxFreq();
-		noOfFrames = Math.floor(pcmDataLen / (overlap * windowSize)) - 1;	// discard the last frame
-		
-		// TODO: find proper way to colour spectrogram
-		//--- determine spectrogram colours
-		var hot = new chroma.ColorScale({
-			colors:['#000000', '#FF0000', '#FFFF00', '#FFFFFF'],
-			positions:[0, .15, .20, .25],
-			mode:'rgb',
-			limits:[0, maxSpecAmp]
-		});
-
-		//--- paint the canvas
-		var jump = Math.floor(noOfFrames / width) > 1 ? Math.floor(noOfFrames / width) : 1;
-		spectrogramCanvasObj.attr('height', 513);
-
-		var x = 0;
-		for(var i = 0; i < noOfFrames; i += jump) {
-			x = Math.round((windowSize * overlap) * i * (width/pcmDataLen));
-
-			for (var freq = 0; freq < maxFreq; ++freq) {
-				spectrogramCanvasCtx.fillStyle = hot.getColor(soundFFT[i][freq]);
-				spectrogramCanvasCtx.fillRect(x, (maxFreq - freq), 1, 1);
-
-			}
-
-		}
-
-		console.log('spectrogram: done');
-		updateSvgPattern();
-	};
-
-	this.drawLogSpectrogram = function(monoPcmData, pcmDataLen) {
-		console.log("Begin drawing log spectrogram...");
-		spectrogramCanvasCtx.clearRect(0, 0, width, spectHeight);
-		
-		
-		var soundSpectValuess = gWaveSpect.waveToSpect(monoPcmData, pcmDataLen);
-		var soundFFT = soundSpectValuess.spectrogram;
-		var maxSpecAmp = soundSpectValuess.maxSpecAmp;
-
-		var overlap = gWaveSpect.getOverlap();
-		var windowSize = gWaveSpect.getWindowSize();
-		var maxFreq = gWaveSpect.getMaxFreq();
-		noOfFrames = Math.floor(pcmDataLen / (overlap * windowSize)) - 1;	// discard the last frame
-		
-		// TODO: find proper way to colour spectrogram
-		//--- determine spectrogram colours
-		var hot = new chroma.ColorScale({
-			colors:['#000000', '#FF0000', '#FFFF00', '#FFFFFF'],
-			positions:[0, .15, .20, .25],
-			mode:'rgb',
-			limits:[0, maxSpecAmp]
-		});
-
-		//--- paint the canvas
-		var jump = Math.floor(noOfFrames / width) > 1 ? Math.floor(noOfFrames / width) : 1;
-
-		var maxCent = 1200 * Math.log2(22100/440) + 4500;
-
-		var x = 0;
-		var freq = 0;
-		var cents = 0;
-
-		for(var i = 0; i < noOfFrames; i += jump) {
-			x = Math.round((windowSize * overlap) * i * (width/pcmDataLen));
-
-			for (var bin = 0; bin < maxFreq; ++bin) {
-				spectrogramCanvasCtx.fillStyle = hot.getColor(soundFFT[i][bin]);
-				freq = bin/maxFreq * 22100;
-				cents = 1200 * Math.log2(freq/440) + 4500;
-				spectrogramCanvasCtx.fillRect(x, (maxCent - cents)/maxCent * maxFreq, 1, 1);
-
-			}
-
-		}
-
-		console.log('spectrogram: done');
-		updateSvgPattern();
-	};
-
 	this.spectrogramFromSvg = function(svgObj, extractedSpectrogram) {
 		
 		//--- scale SVG to according to FFT dimensions
 
-		var maxFreq = gWaveSpect.getMaxFreq();
+		// var maxFreq = gWaveSpect.getMaxFreq();
 		
 		var tempSvgObj = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		var clonedChildren = svgObj.children().clone();
@@ -238,19 +139,16 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 			tempSvgObj.appendChild(clonedChildren[i]);
 		}
 		
-		tempSvgObj.setAttribute('id', "svg-canvas-2");
-		tempSvgObj.setAttribute('width', noOfFrames);
-		tempSvgObj.setAttribute('height', maxFreq);
+		tempSvgObj.setAttribute('width', 5000);
+		tempSvgObj.setAttribute('height', 11.6);
 		tempSvgObj.setAttribute('preserveAspectRatio', "none");
-		tempSvgObj.setAttribute('viewBox', "0 0 " + svgObj.width() + " " + svgObj.height());
-
-
+		tempSvgObj.setAttribute('viewBox', "0 0 5000 500");
+		
 		//--- scale canvas according to FFT dimensions
 
-		setupBlankCanvas(noOfFrames, maxFreq, hiddenCanvasObj, hiddenCanvasCtx);
+		setupBlankCanvas(945, 513, hiddenCanvasObj, hiddenCanvasCtx);
 		hiddenCanvasCtx.fillStyle = '#000000';
-		hiddenCanvasCtx.fillRect(0, 0, noOfFrames, maxFreq);
-
+		hiddenCanvasCtx.fillRect(0, 0, 945, 513);
 
 		//--- create rasterised canvas of SVG
 		
@@ -264,27 +162,26 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		img.src = svgUrl;
 		
 		img.onload = function () {
-			hiddenCanvasCtx.drawImage(img, 0, 0);
-			var pixelData = hiddenCanvasCtx.getImageData(0, 0, noOfFrames, maxFreq);
+			hiddenCanvasCtx.drawImage(img, 0, 513-11.6);
+			var pixelData = hiddenCanvasCtx.getImageData(0, 0, 945, 513);
 			
 			domUrl.revokeObjectURL(svgUrl);
 
 			//--- extract pixels from canvas to form spectrogram
 			
 			var pindex = 0;
-			for (var j = (maxFreq - 1); j >= 0; j--){
-				for(var i = 0; i < noOfFrames; i++){
+			for (var j = (513 - 1); j >= 0; j--){
+				for(var i = 0; i < 945; i++){
 					
 					//--- initialise matrices first
-					if (j == (maxFreq - 1)) {
-						extractedSpectrogram[i] = new Array(maxFreq).fill(0);
+					if (j == (513 - 1)) {
+						extractedSpectrogram[i] = new Array(513).fill(0);
 					}
 
 					extractedSpectrogram[i][j] = rgb2grey(pixelData.data[pindex], pixelData.data[pindex+1], pixelData.data[pindex+2]);
 					pindex+=4;
 				}
 			}
-			// console.log(extractedSpectrogram);
 			hiddenCanvasObj.trigger("imgLoaded");
 		}
 	};

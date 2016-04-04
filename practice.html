@@ -72,14 +72,15 @@
 						<button type="button" id="duplicate-button" class="btn btn-default"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Duplicate</button>
 						<button type="button" id="delete-button" class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
 
-						<button type="button" class="btn btn-primary">Reconstruct sound</button>
+						<button type="button" class="btn btn-primary" id="recon-sound-button">Reconstruct sound</button>
 
-						<span id="tool-used">Tool: Harmonic Pencil</span>
+						<br>
+						<canvas id="hidden-spectrogram-canvas"></canvas>
 
 						<div class="sound-wave">
 							Reconstructed signal:<br>
 							<canvas id="reconstructed-sound-wave"></canvas>
-							<button type="button" class="btn btn-default">
+							<button type="button" class="btn btn-default" id="reconstructed-sound-play-button" >
 								<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
 							</button>
 						</div>
@@ -146,7 +147,6 @@
 							<li>f0: <span id="context-menu-f0">100</span> hz</li>
 
 						</ul>
-
 					</div>
 
 					<nav>

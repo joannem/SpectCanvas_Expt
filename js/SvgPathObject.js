@@ -13,7 +13,7 @@ function SvgPathObject(harmonicId, pathStr, strokeGradient) {
 
 	//--- properties of stroke
 	var strokeOpacity = 1.0;
-	var strokeWidth = 1;
+	var strokeWidth = 14;
 
 	//--- initialising objects
 	createSvgPathObject(strokeWidth);

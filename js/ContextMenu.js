@@ -92,7 +92,7 @@ function ContextMenu() {
 	function listenToNoOfHarmonics() {
 		$("#add-harmonics").click(function(evt) {
 			evt.stopPropagation();
-			if (noOfHarmonics < 15) {
+			if (noOfHarmonics < 5) {
 				noOfHarmonics++;
 				$("#no-of-harmonics").val(noOfHarmonics);
 

@@ -12,7 +12,7 @@ function SvgHarmonic (id, startX, startY) {
 
 	var selected = false;
 
-	var strokeWidth = 1;
+	var strokeWidth = 14;
 	var noOfHarmonics = 3;		// default
 	var strokeGradient = new StrokeGradient(id);
 
@@ -116,23 +116,25 @@ function SvgHarmonic (id, startX, startY) {
 		var newPaths = [];
 		var yVal = 0;
 
-		for (var i = 0; i < noOfHarmonics; i++) {
-			newPaths[i] = "M ";
+		if ((fundamentalPath[0][1] + dy > 0) && (fundamentalPath[0][1] + dy < 500)) {
+			for (var i = 0; i < noOfHarmonics; i++) {
+				newPaths[i] = "M ";
 
-			for (var j = 0; j < fundamentalPath.length; j++) {
-				fundamentalPath[j][0] += dx;
-				fundamentalPath[j][1] += dy;
-				yVal = 500 - (500 - fundamentalPath[j][1]) * (i+1);
-				newPaths[i] += (fundamentalPath[j][0] + "," + yVal + " ");
+				for (var j = 0; j < fundamentalPath.length; j++) {
+					fundamentalPath[j][0] += dx;
+					fundamentalPath[j][1] += dy;
+					yVal = 500 - (500 - fundamentalPath[j][1]) * (i+1);
+					newPaths[i] += (fundamentalPath[j][0] + "," + yVal + " ");
+				}
+				
+				svgPathObjs[i].updatePath(newPaths[i]);
 			}
-			
-			svgPathObjs[i].updatePath(newPaths[i]);
-		}
 
-		that.updateGuideBox();
-		
-		currX = evt.clientX;
-		currY = evt.clientY;
+			updateGuideBox();
+			
+			currX = evt.clientX;
+			currY = evt.clientY;
+		}
 	}
 	
 	function recalculateFundamentalFreq() {
@@ -148,19 +150,17 @@ function SvgHarmonic (id, startX, startY) {
 		}
 	}
 
+	function updateGuideBox() {
+		var thickness = strokeWidth >> 1;
+
+		harmonicGuideBoxSvgObj.setAttribute('x', fundamentalPath[minXPos][0] - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('y', 500 - (500 - fundamentalPath[minYPos][1])*noOfHarmonics - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('width', (fundamentalPath[maxXPos][0] - fundamentalPath[minXPos][0]) + (thickness << 1));
+		harmonicGuideBoxSvgObj.setAttribute('height', (fundamentalPath[maxYPos][1] - fundamentalPath[minYPos][1] + (noOfHarmonics-1)*($("#svg-canvas").height() - fundamentalPath[minYPos][1])) + (thickness << 1));
+	}
 
 	//----- privileged methods -----//
 	
-	/**
-	 * Get the DOM of the gropued SVG object consisting of 
-	 * its path and guide box.
-	 *
-	 * @returns grouped SVG object containing the SVG path and SVG guide box
-	 */
-	this.getGroupedSvgHarmonicObj = function() {
-	  return groupedSvgHarmonicObj;
-	};
-
 	this.drawHarmonics = function(x, y) {
 		var baseHeight = 500 - y;
 		svgPathObjs[0].drawPath(x, y);
@@ -173,15 +173,7 @@ function SvgHarmonic (id, startX, startY) {
 		minYPos = fundamentalPath[minYPos][1] < y ? minYPos : fundamentalPath.length;
 
 		fundamentalPath.push([x, y]);
-	};
-
-	this.updateGuideBox = function() {
-		var thickness = strokeWidth >> 1;
-
-		harmonicGuideBoxSvgObj.setAttribute('x', fundamentalPath[minXPos][0] - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('y', 500 - (500 - fundamentalPath[minYPos][1])*noOfHarmonics - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('width', (fundamentalPath[maxXPos][0] - fundamentalPath[minXPos][0]) + (thickness << 1));
-		harmonicGuideBoxSvgObj.setAttribute('height', (fundamentalPath[maxYPos][1] - fundamentalPath[minYPos][1] + (noOfHarmonics-1)*($("#svg-canvas").height() - fundamentalPath[minYPos][1])) + (thickness << 1));
+		updateGuideBox();
 	};
 
 	this.updateId = function(newId) {
@@ -206,6 +198,10 @@ function SvgHarmonic (id, startX, startY) {
 		return selected;
 	};
 
+	this.getGroupedSvgHarmonicObj = function() {
+	  return groupedSvgHarmonicObj;
+	};
+	
 	this.getStrokeGradient = function() {
 		return strokeGradient.getGradientProperties();
 	};
@@ -216,6 +212,13 @@ function SvgHarmonic (id, startX, startY) {
 
 	this.getFundamentalFreq = function() {
 		return fundamentalFreq;
+	};
+
+	this.getStartPosOfFundamentalPath = function() {
+		return {
+			x: fundamentalPath[0][0],
+			y: fundamentalPath[0][1]
+		};
 	};
 
 	this.addHarmonic = function() {
@@ -231,16 +234,60 @@ function SvgHarmonic (id, startX, startY) {
 		
 		noOfHarmonics++;
 		$('#no-of-harmonics').text(noOfHarmonics);
-		that.updateGuideBox();
+		updateGuideBox();
 	};
-	
+
 	this.deleteHarmonic = function() {
 		groupedSvgHarmonicObj.removeChild(svgPathObjs[noOfHarmonics-1].getPathSvgObj());
 		svgPathObjs.splice(-1, 1);
 
 		noOfHarmonics--;
 		$('#no-of-harmonics').text(noOfHarmonics);
-		that.updateGuideBox();
+		updateGuideBox();
+	};
+	
+	/** Used for cloning  **/
+
+	this.cloneSvgHarmonic = function(clonedHarmonic) {
+		clonedHarmonic.cloneFundamentalPath(fundamentalPath);
+		clonedHarmonic.cloneCoordinates(maxXPos, maxYPos, minXPos, minYPos);
+		clonedHarmonic.cloneGradient(strokeGradient.getGradientProperties());
+		clonedHarmonic.cloneNoOfHarmonics(noOfHarmonics);
+		
+		for (var i = 0; i < noOfHarmonics; i++) {
+			clonedHarmonic.clonePath(i, svgPathObjs[i].getPathStr());
+			clonedHarmonic.cloneOpacity(i, svgPathObjs[i].getStrokeOpacity());
+		}
 	};
 
+	this.cloneFundamentalPath = function(clonedFundamentalPath) {
+		fundamentalPath = clonedFundamentalPath;
+	};
+
+	this.cloneCoordinates = function(clonedMaxXPos, clonedMaxYPos, clonedMinXPos, clonedMinYPos) {
+		minXPos = clonedMinXPos;
+		minYPos = clonedMinYPos;
+		maxXPos = clonedMaxXPos;
+		maxYPos = clonedMaxYPos;
+		updateGuideBox();
+	};
+
+	this.cloneGradient = function(clonedGradientProperties) {
+		strokeGradient.setOffset("redStart", clonedGradientProperties.redStartOffset);
+		strokeGradient.setOffset("white", clonedGradientProperties.whiteOffset);
+		strokeGradient.setOffset("yellow", clonedGradientProperties.yellowOffset);
+		strokeGradient.setOffset("redEnd", clonedGradientProperties.redEndOffset);
+	};
+
+	this.cloneNoOfHarmonics = function(clonedNoOfHarmonics) {
+		noOfHarmonics = clonedNoOfHarmonics;
+	};
+
+	this.clonePath = function(harmonicNo, clonedPath) {
+		svgPathObjs[harmonicNo].updatePath(clonedPath);
+	};
+
+	this.cloneOpacity = function(harmonicNo, clonedOpacity) {
+		svgPathObjs[harmonicNo].updateStrokeOpacity(clonedOpacity);
+	};
 }

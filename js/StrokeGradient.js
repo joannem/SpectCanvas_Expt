@@ -128,8 +128,8 @@ function StrokeGradient(harmonicId) {
 	this.getGradientProperties = function() {
 		return {
 			redStartOffset: redStartOffset,
-			yellowOffset: yellowOffset,
 			whiteOffset: whiteOffset,
+			yellowOffset: yellowOffset,
 			redEndOffset: redEndOffset
 		};
 	};

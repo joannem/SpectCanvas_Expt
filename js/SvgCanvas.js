@@ -37,7 +37,6 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 		$("body").css('cursor', 'initial');
 		$(".tool-button").removeClass("active");
 		$(this).addClass("active");
-		$('#tool-used').text("Tool: Harmonic Pencil Tool");
 	});
 
 	$('#select-tool-button').click(function() {
@@ -46,17 +45,16 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 		$("body").css('cursor', 'pointer');
 		$('.tool-button').removeClass("active");
 		$(this).addClass("active");
-		$('#tool-used').text("Tool: Select Tool");
 	});
 
 	$('#duplicate-button').click(function() {
 		event.stopPropagation();
-		gSvgCanvas.duplicateSvgPaths();
+		duplicateSvgHarmonics();
 	});
 
 	$('#delete-button').click(function() {
 		event.stopPropagation();
-		gSvgCanvas.deleteSelectedSvgHarmonics();
+		deleteSelectedSvgHarmonics();
 	});
 
 
@@ -66,8 +64,8 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 
 		//--- calculate spacing between ticks relative to size of canvas
 		
-		//--- min tick spacing: 1.25px; max freq fixed at 600Hz
-		pxPerHz = (canvasObj.height() / 600.0);
+		//--- min tick spacing: 1.25px; freq range: [100,500]
+		pxPerHz = (canvasObj.height() / 500.0);
 		var minHzPerTick = 1.25 / pxPerHz;
 		
 		var hzPerTick = 10;	// if each tick is min 2.5px
@@ -100,10 +98,10 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 
 				if (tickNo % 25 == 0) {
 					$("#freq-ticks")[0].appendChild(
-						makeNewFreqTickText("#0FF000", 14, y, (tickNo * hzPerTick)));
+						makeNewFreqTickText("#0FF000", 14, y, (tickNo * hzPerTick) + 100));
 				} else {
 					$("#freq-ticks")[0].appendChild(
-						makeNewFreqTickText("#0FF000", 14, y, (tickNo * hzPerTick)%1000));
+						makeNewFreqTickText("#0FF000", 14, y, (tickNo * hzPerTick)%1000 + 100));
 				}
 				
 			} else {
@@ -211,7 +209,6 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 		}).mouseup(function(){
 			event.stopPropagation();
 			$(this).off('mousemove');
-			newSvgHarmonicObj.updateGuideBox();
 
 			//--- update list of objects in SvgCanvas
 			gNoOfSvgHarmonicObjs++;
@@ -221,59 +218,40 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 		});
 	}
 
-	//----- privileged methods -----//
-
-	/**
-	 * Duplicates all the selected SVG paths.
-	 */
-	this.duplicateSvgPaths = function() {
-		var lengthBeforeDuplication = svgPathObjs.length;
+	function duplicateSvgHarmonics() {
+		var lengthBeforeDuplication = svgHarmonicObjs.length;
 
 		// TODO: what if nothing is selected (still have to iterate through the list)
 		for (var i = 0; i < lengthBeforeDuplication; ++i) {
-			//--- delete from canvas and array
-			if (svgPathObjs[i].isSelected()) {
-				this.duplicateSvgPath(i);
+			if (svgHarmonicObjs[i].isSelected()) {
+				duplicateSvgHarmonic(i);
 			}
 		}
 	};
 
-	/**
-	 * Duplicates the path, color and width of an SVG path,
-	 * then pastes the path on the original path's position before it was moved.
-	 *
-	 * @param id[in]    ID of the SVG path to be duplicated.
-	 */
-	this.duplicateSvgPath = function(id) {
-		//-- grab properties of original SVG path
-		var guideBoxCoordinates = svgPathObjs[id].getGuideboxCoordinates();
-		var pathStr = svgPathObjs[id].getPathStr();
-		var strokeProperties = svgPathObjs[id].getStrokeProperties();
+	function duplicateSvgHarmonic(id) {
+		var startPos = svgHarmonicObjs[id].getStartPosOfFundamentalPath();
 
-		//--- create new SVG path object based off properties from the original path
-		var newSvgPathObj = new SvgPathObject(gNoOfSvgPathObjs,
-			guideBoxCoordinates.minX, guideBoxCoordinates.minY,
-			guideBoxCoordinates.maxX, guideBoxCoordinates.maxY,
-			pathStr);
-		//TODO: update gradient values, or find a better way to clone the SVG path
+		//--- create new SVG harmonic object based off properties from the original path
+		var newSvgHarmonicObj = new SvgHarmonic(gNoOfSvgHarmonicObjs, startPos.x, startPos.y);
+		svgHarmonicObjs[id].cloneSvgHarmonic(newSvgHarmonicObj);
 
 		//--- insert group onto canvas
-		newSvgPathObj.updateGuideBox();
-		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
+		spectrogramObj[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
 
 		//--- update list of objects in SvgCanvas
-		gNoOfSvgPathObjs++;
-		svgPathObjs.push(newSvgPathObj);
-	};
+		gNoOfSvgHarmonicObjs++;
+		svgHarmonicObjs.push(newSvgHarmonicObj);
+	}
 
-	this.deleteSelectedSvgHarmonics = function() {
+	function deleteSelectedSvgHarmonics() {
 		var currId = 0;
 
 		// TODO: what if nothing is selected (still have to iterate through the list)
 		while(currId < svgHarmonicObjs.length) {
 			//--- delete from canvas and array
 			if (svgHarmonicObjs[currId].isSelected()) {
-				canvasObj[0].children[1].removeChild(svgHarmonicObjs[currId].getGroupedSvgHarmonicObj());
+				spectrogramObj[0].removeChild(svgHarmonicObjs[currId].getGroupedSvgHarmonicObj());
 				svgHarmonicObjs.splice(currId, 1);
 
 			} else {
@@ -282,7 +260,9 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 				currId++;
 			}
 		}
-	};
+	}
+
+	//----- privileged methods -----//
 
 	this.deselectAllHarmonics = function() {
 		for (var i = 0; i < svgHarmonicObjs.length; i++) {
