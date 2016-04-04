@@ -176,6 +176,22 @@ function SvgHarmonic (id, startX, startY) {
 		updateGuideBox();
 	};
 
+	this.drawStraightHarmonics = function(x, y) {
+		y = fundamentalPath[fundamentalPath.length - 1][1];
+		var baseHeight = 500 - y;
+		svgPathObjs[0].drawPath(x, y);
+		svgPathObjs[1].drawPath(x, 500 - (baseHeight*2));
+		svgPathObjs[2].drawPath(x, 500 - (baseHeight*3));
+
+		maxXPos = fundamentalPath[maxXPos][0] > x ? maxXPos : fundamentalPath.length;
+		maxYPos = fundamentalPath[maxYPos][1] > y ? maxYPos : fundamentalPath.length;
+		minXPos = fundamentalPath[minXPos][0] < x ? minXPos : fundamentalPath.length;
+		minYPos = fundamentalPath[minYPos][1] < y ? minYPos : fundamentalPath.length;
+
+		fundamentalPath.push([x, y]);
+		updateGuideBox();
+	};
+
 	this.updateId = function(newId) {
 		id = newId;
 	};

@@ -199,15 +199,19 @@ function SvgCanvas(canvasObj, spectrogramObj) {
 		var newSvgHarmonicObj = new SvgHarmonic(gNoOfSvgHarmonicObjs, x, y);
 		
 		canvasObj.mousemove(function(evt) {
-			event.stopPropagation();
+			evt.stopPropagation();
 
-			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
+			if (!evt.shiftKey) {
+				newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
+			} else {
+				newSvgHarmonicObj.drawStraightHarmonics(evt.offsetX, evt.offsetY);
+			}
 
 			//--- insert group onto canvas
 			spectrogramObj[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
 
-		}).mouseup(function(){
-			event.stopPropagation();
+		}).mouseup(function(evt){
+			evt.stopPropagation();
 			$(this).off('mousemove');
 
 			//--- update list of objects in SvgCanvas
