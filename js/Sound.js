@@ -60,9 +60,7 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 
 	function setupOnendedEvents() {
 		bufferSrc.onended = function () {
-			if (reachedEndOfSound(this.relativePlayStartTimeInSecs, this.buffer.duration)) {
-				onendedCallbackFunction();
-			}
+			onendedCallbackFunction();
 		}
 	}
 

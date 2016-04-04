@@ -26,8 +26,8 @@ var reconstructedSoundWaveCanvasCtx = $('#reconstructed-sound-wave')[0].getConte
 originalSoundWaveCanvasCtx.fillRect(0, 0, $('#sound-space-container').width(), 140);
 reconstructedSoundWaveCanvasCtx.fillRect(0, 0, $('#sound-space-container').width(), $('#reconstructed-sound-wave').height());
 
-$('#recon-sound-button').click(function() {
-	event.stopPropagation();
+$('#recon-sound-button').click(function(evt) {
+	evt.stopPropagation();
 	
 	//--- clear all the guideboxes
 	gSvgCanvas.deselectAllHarmonics();
@@ -68,8 +68,11 @@ $('#reconstructed-sound-play-button').click(function() {
 	} else if (!gReconSound.isPlaying()) {
 		gReconSound.play(0);
 		gReconSound.setIsPlaying(true);
+		$(this).html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop');
 	} else {
-		// do nothing
+		gReconSound.stopPlaying();
+		gReconSound.setIsPlaying(false);	
+		$(this).html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 	}
 });
 
@@ -123,7 +126,8 @@ function createWaveFile() {
 
 function onSoundStop() {
 	console.log("sound stopped");
-
+	gReconSound.setIsPlaying(false);
+	$('#reconstructed-sound-play-button').html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 }
 
 function writeUTFBytes(view, offset, string){ 

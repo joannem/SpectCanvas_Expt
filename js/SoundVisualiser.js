@@ -162,7 +162,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, hiddenCanvasO
 		img.src = svgUrl;
 		
 		img.onload = function () {
-			hiddenCanvasCtx.drawImage(img, 0, 513-13.9);
+			hiddenCanvasCtx.drawImage(img, 0, 513-11.6);
 			var pixelData = hiddenCanvasCtx.getImageData(0, 0, 945, 513);
 			
 			domUrl.revokeObjectURL(svgUrl);
