@@ -21,6 +21,22 @@ $('.practices').click(function (evt) {
 	loadPractice();
 });
 
+$('#sample-sound-button').click(function() {
+	event.stopPropagation();
+
+	if (gSound == null) {
+		console.log ("No sound data found.");
+	} else if (!gSound.isPlaying()) {
+		gSound.play(0);
+		gSound.setIsPlaying(true);
+		$(this).html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop');
+	} else {
+		gSound.stopPlaying();
+		gSound.setIsPlaying(false);	
+		$(this).html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
+	}
+});
+
 function loadPractice () {
 	loadSoundFile(trailNoToName(trails[currPractice]) + ".wav");
 	loadAnswer(trailNoToName(trails[currPractice]) + ".png");
