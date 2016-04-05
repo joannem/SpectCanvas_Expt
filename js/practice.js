@@ -12,10 +12,8 @@ $('.practices').click(function (evt) {
 	$('.practices').removeClass("active");
 	$(this).addClass("active");
 
-	var practice = $(this)[0].id.substr(8);
-	console.log(practice);
-	
-
+	currPractice = ($(this)[0].id.substr(10)) - 1;
+	loadPractice();
 });
 
 function loadPractice () {
