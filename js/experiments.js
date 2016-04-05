@@ -177,6 +177,20 @@ function setupSectionTwoTest() {
 	});
 }
 
+function createCsvContent() {
+	var noOfCorrectAnsSectionOne = [];
+	var noOfCorrectAns = 0;
+	var likelinessRatingSectionTwo = [];
+	var likelinessRatingSectionTwoOneSet = [];
+
+	var timeTakenSectionOne = [];
+	var timeTakenSectionTwo = [];
+}
+
+function createDownloadForCsv() {
+	
+}
+
 function updateExptTrails() {
 	$('#set-indicator').text(currSet);
 	$('#section-indicator').text(currSection);
@@ -238,7 +252,6 @@ $('#sample-sound-button').click(function() {
 		$(this).html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 	}
 });
-
 
 // http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 // Fisher-Yates (aka Knuth) Shuffle

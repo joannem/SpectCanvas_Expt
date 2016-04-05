@@ -33,66 +33,88 @@
 				<div class="col-md-10">
 					<h2>Instructions:</h2>
 					<h3>Backgound information on spectrograms</h3>
-					<p>A spectrogram is a visual representation of a sound that is often used by engineers and researchers to analyse animal sounds or timbres of instruments.</p>
-					<img src="img/spectrogram.jpg" width="90%">
-					<h4>Axes of a spectrogram</h4>
-					<p>A spectrogram represents a given sound in 3 dimensions. The horizontal axis represents time, the vertical axis represents frequency, and the third dimension represents the amplitude of a particular frequency at a particular time according to the intensity of colour of each point in the image.</p>
-					<p>This can be represented by a colour map, or by the opacity of the colour:</p>
-				</div>
-			</div>
-			<!-- insert pictures of spectrogram amplitude-->
-			<div class="row">
-				<div class="col-md-5 col-md-offset-1">
-					
-				</div>
-				<div class="col-md-5">
-					
-				</div>
-			</div>
+					<div class="instructions instructions-1">
+						<p>A spectrogram is a visual representation of a sound that is often used by engineers and researchers to analyse animal sounds or timbres of instruments.</p>
+						<img src="img/spectrogram.jpg" width="90%">
+						<h4>Axes of a spectrogram</h4>
+						<p>A spectrogram represents a given sound in 3 dimensions: </p>
+						<ul>
+							<li>Horizontal axis: time</li>
+							<li>Vertical axis: frequency</li>
+							<li>Intensity of colour:  amplitude of a particular frequency at a particular time</li>
+						</ul>
+					</div>
 
-			<div class="row">
-				<div class="col-md-10">
-					<h4>Timbre/Character of sound</h4>
-					<p>While frequency and amplitude is often used to describe a pure sound wave, a music’s character is often shaped by how these attributes change over time, or how these sine waves are played on top of each other.</p>
-					<p>These are usually dependent on the following features of a spectrogram:</p>
-					<ol>
-						<li>
-						<p><b>ADSR Envelopes.</b><br>
-						When a musical instrument is played, its amplitude is often not static. Instead, the loudness of the sound would build up and decay over time as a single note is played. This is referred to as an <i>envelope</i> and varies different from instrument to instrument, giving different instruments its specific character. An envelope can also be represented by graphically on an amplitude-time graph:</p>
-						</li>
-						<li>
-						<p><b>Harmonic Envelopes.</b><br>
-						Compared to a single sine tone, instruments tend to sound richer due to the presence of harmonics. On the spectrogram, these show up as extra frequency bands that are multiples above the base frequency:</p>
-						</li>
-					</ol>
+					<div class="instructions instructions-2">
+						<h4>Amplitude/Intensity</h4>
+						<p>The intensity of colour can be represented by a colour map, or by the opacity of the colour:</p>
+						<img src="img/amp-eg.png">
+
+						<table class="table">
+							<tr>
+								<td>A single sine wave played at the frequency of 262Hz (note C4) for 1s at constant amplitude would look like the following on a spectrogram:</td>
+								<td><img width="550px" src="img/C4_constAmp.png"></td>
+							</tr>
+							<tr>
+								<td>The same sine wave played at increasing frequencies C4: 262Hz, E4: 330Hz, G4: 392Hz, would look like the following on a spectrogram</td>
+								<td><img width="550px" src="img/C4E4G4_constAmp.png"></td>
+							</tr>
+							<tr>
+								<td>A single sine wave played at a constant frequency of 262Hz (note C4) for 1s with decreasing amplitide would look like the following on a spectrogram:</td>
+								<td><img width="550px" src="img/C4_deacAmp.png"></td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="instructions instructions-3">
+						<h4>Timbre/Character of sound</h4>
+						<p>While frequency and amplitude is often used to describe a pure sound wave, a music’s character is often shaped by how these attributes change over time, or how these sine waves are played on top of each other.</p>
+						<p>These are usually dependent on the following features of a spectrogram:</p>
+						<ol>
+							<li>
+							<p><b>ADSR Envelopes.</b><br>
+							When a musical instrument is played, its amplitude is often not static. Instead, the loudness of the sound would build up and decay over time as a single note is played. This is referred to as an <i>envelope</i> and varies different from instrument to instrument, giving different instruments its specific character. An envelope can also be represented by graphically on an amplitude-time graph:</p>
+							<p><img src="img/envelope_amp.png"></p>
+							<p>This is represented like so on the spectrogram.</p>
+							</li>
+							<li>
+							<p><b>Harmonic Envelopes.</b><br>
+							Compared to a single sine tone, instruments tend to sound richer due to the presence of harmonics. On the spectrogram, these show up as extra frequency bands that are multiples above the base frequency:</p>
+							<img src="img/amp-eg.png">
+							<table class="table">
+								<tr>
+									<td>Spectrogram and sound signal of a sine tone:</td>
+									<td><img width="550px" src="img/C4_constAmp.png"></td>
+								</tr>
+								<tr>
+									<td>Spectrogram and sound signal of an instrument with 3 harmonics.</td>
+									<td><img width="550px" src="img/C4_3Harmonics.png"></td>
+								</tr>
+							</table>
+							</li>
+						</ol>
+					</div>
+
+					<div class="instructions instructions-4">
+						<a href="practice.html" class="btn btn-primary active">Begin Practice</a>	
+					</div>
 				</div>
 			</div>
-
 
 			<nav>
 				<ul class="pagination">
-					<li>
-						<a href="#" aria-label="Previous">
-							<span aria-hidden="true">&laquo;</span>
-						</a>
-					</li>
-					<li><a href="#">1</a></li>
-					<li><a href="#">2</a></li>
-					<li><a href="#">3</a></li>
-					<li><a href="#">4</a></li>
-					<li><a href="#">5</a></li>
-					<li>
-						<a href="#" aria-label="Next">
-							<span aria-hidden="true">&raquo;</span>
-						</a>
-					</li>
+					<li class="instructions-pagination active" id="page-1"><a href="#">1</a></li>
+					<li class="instructions-pagination" id="page-2"><a href="#">2</a></li>
+					<li class="instructions-pagination" id="page-3"><a href="#">3</a></li>
+					<li class="instructions-pagination" id="page-4"><a href="#">4</a></li>
 				</ul>
 			</nav>
-			<a href="practice.html" class="btn btn-primary active">Next</a>
+
 		</div>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="js/vendor/jquery-2.2.2.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="js/vendor/bootstrap.min.js"></script>
+		<script src="js/instructions.js"></script>
 	</body>
 </html>

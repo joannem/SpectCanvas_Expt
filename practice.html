@@ -36,12 +36,11 @@
 					<h2>Practice</h2>
 					<h3>Instructions</h3>
 					<p>This segment is to help you familiarise yourself to the Spectrogram Canvas interface and its tools.</p>
-					<p>Each practice round has two sections:</p>
-					<p><b>First section. </b></p>
-					<p>You will presented with basic sound signals and a half-complete spectrogram on a Spectrogram Canvas interface. We would like to ask you to modify the spectrogram based on your knowledge on spectrograms. Do note that to simplify the task, only specific features of Spectrogram Canvas can be edited. Be assured that the disabled features are not required to complete the task.</p>
-					<p><b>Second section. </b></p>
-					<p>You will be presented with a blank Spectrogram Canvas. In order to familiarise yourself with the harmonic pencil tool, you’ll be asked to replicate your spectrogram drawing from the first section onto the blank Spectrogram Canvas.</p>
-					<a class="btn btn-primary active">Begin practice</a>
+
+					<p>You will be presented with a blank Spectrogram Canvas. In order to familiarise yourself with the harmonic pencil tool, you’ll be asked to replicate your spectrogram drawing from the picture and play the sound.</p>
+					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectCanvasGuide">
+						Spectrogram Canvas guide
+					</button>
 				</div>
 			</div>
 
@@ -49,9 +48,9 @@
 				<div class="col-md-10">	
 					<div id="sound-space-container">
 						<div class="sound-wave">
-							Original signal (mimic this):<br>
+							Original signal:<br>
 							<canvas id="original-sound-wave"></canvas>
-							<button type="button" class="btn btn-default">
+							<button type="button" id="sample-sound-button" class="btn btn-default">
 								<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
 							</button>
 						</div>
@@ -151,39 +150,31 @@
 
 					<nav>
 						<ul class="pagination">
-							<li>
-								<a href="#" aria-label="Previous">
-									<span aria-hidden="true">&laquo;</span>
-								</a>
-							</li>
-							<li><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li>
-								<a href="#" aria-label="Next">
-									<span aria-hidden="true">&raquo;</span>
-								</a>
-							</li>
+							<li class="practices practices-1 active"><a>1</a></li>
+							<li class="practices practices-2"><a>2</a></li>
+							<li class="practices practices-3"><a>3</a></li>
+							<li class="practices practices-4"><a>4</a></li>
+							<li class="practices practices-5"><a>5</a></li>
+							<li class="practices practices-6"><a>6</a></li>
+							<li class="practices practices-7"><a>7</a></li>
+							<li class="practices practices-8"><a>8</a></li>
 						</ul>
 					</nav>
-
-					<a href="experiments.html" class="btn btn-primary active">Begin experiment</a>
+					<a style="display: none;" href="experiments.html" class="btn btn-primary active">Begin experiment</a>
 				</div>
 
 				<div class="col-md-2">
 					<br>
-					<!-- Button trigger modal -->
-					<a class="btn btn-primary active" download="sound.wav" id="download-wav">
+					<!-- <a class="btn btn-primary active" download="sound.wav" id="download-wav">
 						Download WAV file
-					</a>
-					<br><br>
-					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectCanvasGuide">
-						Spectrogram Canvas guide
+					</a> -->
+					<!-- Button trigger modal -->
+					<!-- <br><br> -->
+					<button type="button" class="btn btn-primary active" data-toggle="modal" data-target="#spectAnswer">
+						Show answer
 					</button>
 
-					<!-- Modal -->
+					<!-- Modals -->
 					<div class="modal fade" id="spectCanvasGuide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 						<div class="modal-dialog" role="document">
 							<div class="modal-content">
@@ -192,12 +183,29 @@
 									<h4 class="modal-title" id="myModalLabel">How to use Spectrogram Canvas</h4>
 								</div>
 								<div class="modal-body">
+									<h4>How it works</h4>
+									<p>Spectrogram Canvas allows users to create their own sounds by drawing and editing on a given canvas. The software is then be able to reconstruct the corresponding sound by inversing the spectrogram into a sound signal.</p>
 									<h4>Tools in Spectrogram Canvas</h4>
 									<p><b>Harmonic-pencil tool:</b> Used to draw more than one harmonics at a time. Right-click on harmonic after drawing to bring up the harmonic inspector. Hold down the <i>Shift</i> key to draw a straight horizontal line if needed.</p>
 									<p><b>Harmonic inspector:</b> Used to adjust the amplitudes of individual partials, add or delete new harmonics at integer multiples of the base frequency (f0). The overall envelope of the harmonics can be adjusted by changing the gradient colour of the painted harmonics.</p>
 									<p><b>Select tool:</b> Used to select or deselect harmonics on the spectrogram. Selected harmonics will be bounded by a box to indicate that it has been selected.</p>
 									<p><b>Delete tool:</b> Delete all selected harmonics.</p>
 									<p><b>Duplicate tool:</b> Duplicate all selected harmonics.</p>
+									<h4>Creating the sound</h4>
+									<p>Click on the <b>Reconstruct Sound</b> button</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="spectAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content" style="width: 800px;">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">Answer</h4>
+								</div>
+								<div class="modal-body">
+									<img id="ans-img" width="760px" src="">
 								</div>
 							</div>
 						</div>

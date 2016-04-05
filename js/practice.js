@@ -1,3 +1,58 @@
+var freqTrails = [200, 250, 300];
+var waveTypeTrials = ["SinW", "ConstH", "DecH"];
+var envelopeTrails = ["ConstE", "IncDecE"];
+
+var trails = [0, 1, 2, 3, 4, 5, 6, 12]
+var currPractice = 0;
+
+loadPractice();
+
+$('.practices').click(function (evt) {
+	evt.stopPropagation();
+	$('.practices').removeClass("active");
+	$(this).addClass("active");
+
+	var practice = $(this)[0].id.substr(8);
+	console.log(practice);
+	
+
+});
+
+function loadPractice () {
+	loadSoundFile(trailNoToName(trails[currPractice]) + ".wav");
+	loadAnswer(trailNoToName(trails[currPractice]) + ".png");
+}
+
+function loadSoundFile(soundFileName) {
+	// console.log(soundFileName);
+	var request = new XMLHttpRequest(); 
+	
+	request.open("GET", "TestTones/" + soundFileName, true); 
+	request.responseType = "arraybuffer"; 
+
+	request.onload = function() { 
+		gAudioCtx.decodeAudioData(request.response, function(buffer) {
+			gSound = new Sound (gAudioCtx, buffer, soundStoppedFunction);
+			gMonoSoundData = gSound.getMonoSoundData();
+			gSoundVisualiser.drawWaveform(gMonoSoundData.monoPcmData, gMonoSoundData.pcmDataLen, gMonoSoundData.maxAmp);
+		});
+	};
+
+	request.send();
+}
+
+function loadAnswer(imgFileName) {
+	$('#ans-img').attr('src', "img/" + imgFileName);
+}
+
+function trailNoToName(trailNo) {
+	var freq = Math.floor(trailNo/6);
+	var envelope = (trailNo - freq*6) % 2;
+	var waveType = Math.floor(trailNo/2) % 3;
+
+	return freqTrails[freq] + "_" + waveTypeTrials[waveType] + "_" + envelopeTrails[envelope];
+}
+
 function createWaveFile() {
 	/* http://typedarray.org/from-microphone-to-wav-with-getusermedia-and-web-audio/ */
 	var soundData = gReconSound.getSoundData();
@@ -57,4 +112,10 @@ function writeUTFBytes(view, offset, string){
 	for (var i = 0; i < lng; i++){
 		view.setUint8(offset + i, string.charCodeAt(i));
 	}
+}
+
+function soundStoppedFunction() {
+	console.log("sound stoped");
+	gSound.setIsPlaying(false);
+	$('#sample-sound-button').html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play');
 }
