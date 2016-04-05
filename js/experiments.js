@@ -1,3 +1,4 @@
+$('#results-download-button').css('display', "none");
 var freqTrails = [200, 250, 300];
 var waveTypeTrials = ["SinW", "ConstH", "DecH"];
 var envelopeTrails = ["ConstE", "IncDecE"];
@@ -70,7 +71,7 @@ function loadOptions() {
 
 		if (selectedOptions[($(this)[0].id).substr(7)] == trails[currTrail]) {
 			noOfCorrectAns++;
-			console.log("correct");
+			// console.log("correct");
 		}
 
 		showAnswer();
@@ -95,7 +96,7 @@ function loadOptions() {
 				beginSectionTwo();
 			}
 
-			// window.scrollTo(0, 0);
+			window.scrollTo(0, 0);
 		});
 
 	});
@@ -137,19 +138,14 @@ function setupSectionTwoTest() {
 	updateExptTrails();
 	$('#next-experiment').addClass("disabled");
 
-	if (currSet == 3 && currTrail == 13) {
-		$('#next-experiment').text("Done");
-		$('#next-experiment').attr('href', "post-questionnaire.html");
-
-	}
 
 	var rank = 0;
 	
 	$('.radio-recon-rank').click(function(evt) {
 		evt.stopPropagation();
 		$('.radio-recon-rank').off('click');
-		console.log($(this)[0].children);
 		rank = $(this)[0].children[0].value;
+
 
 		$('#next-experiment').removeClass("disabled");
 		$('#next-experiment').click(function(evt) {
@@ -170,7 +166,13 @@ function setupSectionTwoTest() {
 				currSet++;
 				likelinessRatingSectionTwo.push(likelinessRatingSectionTwoOneSet);
 
-				beginSectionOne();
+
+				if (currSet == 4) {
+					$('#next-experiment').addClass("disabled");
+					createCsvContent();
+				} else {
+					beginSectionOne();
+				}
 			}
 
 		});
@@ -178,17 +180,32 @@ function setupSectionTwoTest() {
 }
 
 function createCsvContent() {
-	var noOfCorrectAnsSectionOne = [];
-	var noOfCorrectAns = 0;
-	var likelinessRatingSectionTwo = [];
-	var likelinessRatingSectionTwoOneSet = [];
+	var csvContent = "data:text/csv;charset=utf-8,";
+	var dataString = noOfCorrectAnsSectionOne.join(",");
+   	csvContent += dataString+ "\n";
 
-	var timeTakenSectionOne = [];
-	var timeTakenSectionTwo = [];
-}
+   	for (var i = 0; i < likelinessRatingSectionTwo.length; i++) {
+   		dataString = likelinessRatingSectionTwo[i].join(",");
+   		csvContent += dataString+ "\n";
+   	}
+   	dataString = timeTakenSectionOne.join(",");
+   	csvContent += dataString+ "\n";
+	dataString = timeTakenSectionTwo.join(",");
+   	csvContent += dataString+ "\n";
 
-function createDownloadForCsv() {
+
+	var encodedUri = encodeURI(csvContent);
+	var link = document.getElementById("results-download-button");
+	link.setAttribute("href", encodedUri);
+	link.setAttribute("download", "my_results.csv");
+	$('#results-download-button').show();
 	
+	$('#results-download-button').click(function() {
+		$('#next-experiment').removeClass("disabled");
+		$('#next-experiment').click(function() {
+			$(this).attr('href', "post-questionnaire.html");
+		});
+	});
 }
 
 function updateExptTrails() {

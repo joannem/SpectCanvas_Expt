@@ -13,6 +13,11 @@ $('.practices').click(function (evt) {
 	$(this).addClass("active");
 
 	currPractice = ($(this)[0].id.substr(10)) - 1;
+
+	if (currPractice == 7) {
+		$('#begin-expt-button').show();
+	}
+
 	loadPractice();
 });
 
