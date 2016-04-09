@@ -61,7 +61,7 @@ function setupSectionOneTest() {
 function loadOptions() {
 	for (var i = 0; i < 4; i++) {
 		$('#option-'+i+' img').css('border', "none");
-		$('#option-'+i+' img').attr('height', "400px");
+		$('#option-'+i+' img').attr('width', "945px");
 		$('#option-'+i+' img').attr('src', "img/" + trailNoToName(selectedOptions[i]) + ".png");
 	}
 
